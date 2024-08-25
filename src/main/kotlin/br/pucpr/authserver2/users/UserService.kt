@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class UserService(
-    val userRepository: UserRepository,
+    private val userRepository: UserRepository,
     private val roleRepository: RoleRepository
 ) {
     fun save(user: User) = userRepository.save(user)
@@ -17,8 +17,8 @@ class UserService(
     fun findAll(dir: SortDir, roleName: String?) =
         roleName?.let {
             when (dir) {
-                SortDir.ASC -> userRepository.findByRole(roleName!!).sortedBy { it.name }
-                SortDir.DESC -> userRepository.findByRole(roleName!!).sortedBy { it.name }
+                SortDir.ASC -> userRepository.findByRole(roleName.uppercase()).sortedBy { it.name }
+                SortDir.DESC -> userRepository.findByRole(roleName.uppercase()).sortedBy { it.name }
             }
         } ?: when (dir) {
             SortDir.ASC -> userRepository.findAll(Sort.by("name").ascending())

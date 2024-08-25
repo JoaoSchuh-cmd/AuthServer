@@ -1,6 +1,7 @@
 package br.pucpr.authserver2.users
 
 import br.pucpr.authserver2.roles.Role
+import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
@@ -14,7 +15,7 @@ import org.jetbrains.annotations.NotNull
 
 @Entity
 @Table(name="tbUser")
-class User(
+class  User(
     @Id @GeneratedValue
     var id: Long? = null,
     @Column(unique = true, nullable = false)
@@ -30,5 +31,6 @@ class User(
         joinColumns = [JoinColumn(name = "idUser")],
         inverseJoinColumns = [JoinColumn(name = "idRole")]
     )
+    @JsonIgnore
     val roles: MutableSet<Role> = mutableSetOf()
 )

@@ -18,27 +18,33 @@ class UserController(
             .body(userService.save(user.toUser()))
 
     @GetMapping()
-    fun findAll(sortDir: String? = null) =
+    fun findAll(
+        @RequestParam sortDir: String? = null,
+        @RequestParam roleName: String? = null
+    ) =
         SortDir.entries.firstOrNull { it.name == (sortDir ?: "ASC").uppercase() }
-            ?.let { userService.findAll(it) }
+            ?.let { userService.findAll(it, roleName) }
+            ?.map { UserResponse(it) }
             ?.let { ResponseEntity.ok(it) }
             ?: ResponseEntity.badRequest().build()
 
     @GetMapping("/id={id}")
     fun findById(@PathVariable(value = "id") id: Long) =
         userService.findByIdOrNull(id)
+            ?.let { UserResponse(it) }
             ?.let { ResponseEntity.ok(it) }
             ?: ResponseEntity.notFound().build()
 
     @GetMapping("/email={email}")
     fun findByEmail(@PathVariable(value = "email") email: String) =
         userService.findByEmail(email)
-            ?.let { ResponseEntity.ok(it) }
-            ?: ResponseEntity.notFound().build()
+            .map { UserResponse(it) }
+            .let { ResponseEntity.ok(it) }
 
     @DeleteMapping("/{id}")
     fun deleteById(@PathVariable(value = "id") id: Long) =
         userService.findByIdOrNull(id)
+            ?.let { UserResponse(it) }
             ?.let {
                 userService.deleteById(id)
                 ResponseEntity.ok(it)
