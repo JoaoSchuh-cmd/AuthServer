@@ -1,11 +1,11 @@
-package br.pucpr.authserver2
+package com.pucpr.br.AuthServer
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
 @SpringBootApplication
-class Authserver2Application
+class AuthServerApplication
 
 fun main(args: Array<String>) {
-	runApplication<Authserver2Application>(*args)
+	runApplication<AuthServerApplication>(*args)
 }

@@ -1,2 +1,0 @@
-# AuthServer
- Authorization Server 

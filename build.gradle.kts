@@ -1,12 +1,12 @@
 plugins {
-	id("org.springframework.boot") version "3.3.2"
-	id("io.spring.dependency-management") version "1.1.6"
-	kotlin("jvm") version "1.9.24"
-	kotlin("plugin.spring") version "1.9.24"
-	kotlin("plugin.jpa") version "1.9.24"
+	kotlin("jvm") version "1.9.25"
+	kotlin("plugin.spring") version "1.9.25"
+	id("org.springframework.boot") version "3.4.2"
+	id("io.spring.dependency-management") version "1.1.7"
+	kotlin("plugin.jpa") version "1.9.25"
 }
 
-group = "br.pucpr"
+group = "com.pucpr.br"
 version = "0.0.1-SNAPSHOT"
 
 java {
@@ -20,18 +20,14 @@ repositories {
 }
 
 dependencies {
-	implementation("org.springframework.boot:spring-boot-starter-validation")
+	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
-	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
+	runtimeOnly("com.h2database:h2")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-
-	// PERSISTÊNCIA
-	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-	runtimeOnly("com.h2database:h2")
 }
 
 kotlin {
@@ -40,10 +36,12 @@ kotlin {
 	}
 }
 
-tasks.withType<Test> {
-	useJUnitPlatform()
-}
-
 allOpen {
 	annotation("jakarta.persistence.Entity")
+	annotation("jakarta.persistence.MappedSuperclass")
+	annotation("jakarta.persistence.Embeddable")
+}
+
+tasks.withType<Test> {
+	useJUnitPlatform()
 }
