@@ -1,5 +1,6 @@
 package com.pucpr.br.AuthServer.users
 
+import com.pucpr.br.AuthServer.auxfunctions.SortDir
 import org.springframework.data.domain.Sort
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
