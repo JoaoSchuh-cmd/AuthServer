@@ -17,7 +17,7 @@ class ItemService(
             SortDir.DESC -> itemRepository.findAll(Sort.by("code").descending())
         }
     fun findByIdOrNull(id: Long) = itemRepository.findByIdOrNull(id)
-    fun findByCode(code: Int) = itemRepository.findByCodeOrNull(code)
+    fun findByCode(code: Int) = itemRepository.findByCode(code)
 
     fun delete(id: Long) = itemRepository.deleteById(id)
 }

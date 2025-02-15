@@ -28,8 +28,7 @@ class ItemController(
 
     @GetMapping
     fun findAll(@RequestParam dir: String = "ASC"): ResponseEntity<List<Item>> {
-        val sortDir = SortDir.findOrNull(dir)
-        if (sortDir == null)
+        val sortDir = SortDir.findOrNull(dir) ?:
             return ResponseEntity.badRequest().build()
         return ResponseEntity.ok(itemService.findAll(sortDir))
     }
