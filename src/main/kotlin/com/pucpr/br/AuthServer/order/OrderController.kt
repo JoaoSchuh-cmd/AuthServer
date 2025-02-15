@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/orders")
 class OrderController(
-    val orderService: OrderService
+    val orderService: OrderService,
+    val orderRepository: OrderRepository
 ) {
     @PostMapping
     fun insert(@RequestBody order: Order) =
@@ -42,11 +42,11 @@ class OrderController(
             ?.let { ResponseEntity.ok(it) }
             ?: ResponseEntity.notFound().build()
 
-    @GetMapping("/{id}")
+    @GetMapping("/{id}/items")
     fun findAllItems(@PathVariable id: Long): ResponseEntity<List<Item>>? {
-        return orderService.findAllItems(id)
-            ?.let { ResponseEntity.ok(it) }
-            ?: ResponseEntity.notFound().build()
+        val order = orderRepository.findById(id).orElse(null)
+            ?: return ResponseEntity.notFound().build()
+        return ResponseEntity.ok(orderService.findAllItemsByOrder(order))
     }
 
     @DeleteMapping("/{id}")

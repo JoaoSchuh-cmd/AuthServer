@@ -1,11 +1,7 @@
 package com.pucpr.br.AuthServer.order
 
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
-import jakarta.persistence.Table
+import com.pucpr.br.AuthServer.items.Item
+import jakarta.persistence.*
 import jakarta.validation.constraints.NotBlank
 
 @Entity
@@ -17,5 +13,8 @@ class Order(
 
     @NotBlank
     @Column(name = "number")
-    var number: String,
+    var number: Int,
+
+    @OneToMany(mappedBy = "order", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    val items: List<Item>? = mutableListOf()
 )

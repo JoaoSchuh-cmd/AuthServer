@@ -1,6 +1,7 @@
 package com.pucpr.br.AuthServer.items
 
 import com.pucpr.br.AuthServer.auxfunctions.SortDir
+import org.springframework.data.domain.Sort
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -26,7 +27,7 @@ class ItemController(
         }
     }
 
-    @GetMapping
+    @GetMapping()
     fun findAll(@RequestParam dir: String = "ASC"): ResponseEntity<List<Item>> {
         val sortDir = SortDir.findOrNull(dir) ?:
             return ResponseEntity.badRequest().build()
@@ -40,10 +41,12 @@ class ItemController(
             ?: ResponseEntity.notFound().build()
 
     @GetMapping("/code={code}")
-    fun findByCode(@PathVariable code: Int) =
-        itemService.findByCode(code)
-            ?.let { ResponseEntity.ok(it) }
-            ?: ResponseEntity.notFound().build()
+    fun findByCode(@PathVariable code: Int, @RequestParam dir: String = "ASC") {
+        when (dir) {
+            "ASC" -> itemService.findByCode(code, SortDir.ASC).let { ResponseEntity.ok(it) }
+            "DESC" -> itemService.findByCode(code, SortDir.DESC).let { ResponseEntity.ok(it) }
+        }
+    }
 
     @DeleteMapping("/{id}")
     fun delete(@PathVariable id: Long) =

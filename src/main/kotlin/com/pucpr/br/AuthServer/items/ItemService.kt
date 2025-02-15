@@ -16,8 +16,14 @@ class ItemService(
             SortDir.ASC -> itemRepository.findAll(Sort.by("code"))
             SortDir.DESC -> itemRepository.findAll(Sort.by("code").descending())
         }
+
     fun findByIdOrNull(id: Long) = itemRepository.findByIdOrNull(id)
-    fun findByCode(code: Int) = itemRepository.findByCode(code)
+
+    fun findByCode(code: Int, dir: SortDir) =
+        when(dir) {
+            SortDir.ASC -> itemRepository.findAll(Sort.by("code"))
+            SortDir.DESC -> itemRepository.findAll(Sort.by("code").descending())
+        }
 
     fun delete(id: Long) = itemRepository.deleteById(id)
 }
