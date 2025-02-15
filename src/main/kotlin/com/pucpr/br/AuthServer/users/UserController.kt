@@ -1,5 +1,6 @@
 package com.pucpr.br.AuthServer.users
 
+import com.pucpr.br.AuthServer.auxfunctions.SortDir
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*

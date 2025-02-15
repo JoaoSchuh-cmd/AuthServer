@@ -1,4 +1,4 @@
-package com.pucpr.br.AuthServer.users
+package com.pucpr.br.AuthServer.auxfunctions
 
 enum class SortDir {
     ASC, DESC;
