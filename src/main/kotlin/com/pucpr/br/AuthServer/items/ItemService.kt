@@ -19,7 +19,7 @@ class ItemService(
 
     fun findByIdOrNull(id: Long) = itemRepository.findByIdOrNull(id)
 
-    fun findByCode(code: Int, dir: SortDir) =
+    fun findByCode(code: Int, dir: SortDir): List<Item> =
         when(dir) {
             SortDir.ASC -> itemRepository.findAll(Sort.by("code"))
             SortDir.DESC -> itemRepository.findAll(Sort.by("code").descending())
