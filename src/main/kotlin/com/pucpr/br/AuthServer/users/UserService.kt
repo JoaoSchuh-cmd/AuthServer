@@ -1,4 +1,4 @@
-package br.pucpr.authserver.users
+package com.pucpr.br.AuthServer.users
 
 import org.springframework.data.domain.Sort
 import org.springframework.data.repository.findByIdOrNull

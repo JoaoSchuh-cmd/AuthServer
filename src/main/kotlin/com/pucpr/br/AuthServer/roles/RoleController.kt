@@ -1,4 +1,4 @@
-package br.pucpr.authserver.roles
+package com.pucpr.br.AuthServer.roles
 
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
