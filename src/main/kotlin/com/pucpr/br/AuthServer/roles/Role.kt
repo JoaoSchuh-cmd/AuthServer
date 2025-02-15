@@ -1,4 +1,4 @@
-package br.pucpr.authserver.roles
+package com.pucpr.br.AuthServer.roles
 
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
