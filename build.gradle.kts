@@ -8,6 +8,11 @@ plugins {
 
 group = "com.pucpr.br"
 version = "0.0.1-SNAPSHOT"
+configurations {
+	compileOnly {
+		extendsFrom(configurations.annotationProcessor.get())
+	}
+}
 
 java {
 	toolchain {
@@ -18,6 +23,8 @@ java {
 repositories {
 	mavenCentral()
 }
+
+
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
@@ -34,6 +41,8 @@ dependencies {
 	implementation("io.jsonwebtoken:jjwt-api:${jjwt}")
 	implementation("io.jsonwebtoken:jjwt-jackson:${jjwt}")
 	runtimeOnly("io.jsonwebtoken:jjwt-impl:${jjwt}")
+
+	annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")

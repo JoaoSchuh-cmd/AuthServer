@@ -17,17 +17,17 @@ import java.time.ZonedDateTime
 import java.util.Date
 
 @Component
-class Jwt {
+class Jwt(val properties: SecurityProperties) {
     fun createToken(user: User): String =
         UserToken(user).let {
             Jwts.builder()
-                .signWith(Keys.hmacShaKeyFor(SECRET.toByteArray()))
+                .signWith(Keys.hmacShaKeyFor(properties.token.toByteArray()))
                 .json(JacksonSerializer())
                 .issuedAt(utcNow().toDate())
                 .expiration(utcNow().plusHours(
-                    if (it.isAdmin) ADMIN_EXPIRE_HOURS else EXPIRE_HOURS).toDate()
+                    if (it.isAdmin) properties.adminExpireHours else properties.expireHours).toDate()
                 )
-                .issuer(ISSUER)
+                .issuer(properties.issuer)
                 .subject(user.id.toString())
                 .claim(USER_FIELD, it)
                 .compact()
@@ -46,13 +46,13 @@ class Jwt {
             val claims =
                 Jwts.parser()
                     .json(JacksonDeserializer(mapOf(USER_FIELD to UserToken::class.java)))
-                    .verifyWith(Keys.hmacShaKeyFor(SECRET.toByteArray()))
+                    .verifyWith(Keys.hmacShaKeyFor(properties.token.toByteArray()))
                     .build()
                     .parseSignedClaims(token)
                     .payload
 
             /* AuthServer só trabalha com tokens do próprio AuthServer */
-            if (claims.issuer != ISSUER) return null
+            if (claims.issuer != properties.issuer) return null
 
             return claims.get("user", UserToken::class.java).toAuthentication()
 
@@ -65,10 +65,6 @@ class Jwt {
     companion object {
         val log = LoggerFactory.getLogger(Jwt::class.java)
 
-        val SECRET = "865374624502953c1d61cf6081c0a53c4b6fde9c"
-        const val EXPIRE_HOURS = 48L
-        const val ADMIN_EXPIRE_HOURS = 1L
-        const val ISSUER = "PUCPR AuthServer"
         const val USER_FIELD = "user"
 
         private fun utcNow() = ZonedDateTime.now(ZoneOffset.UTC)
