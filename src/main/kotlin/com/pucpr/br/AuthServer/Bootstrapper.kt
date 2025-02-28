@@ -25,7 +25,7 @@ class Bootstrapper(
         val order = Order(
             buyer = userRepository.findByEmail("user3@authserver.com"),
             number = 1,
-            items = listOf(
+            items = mutableListOf(
                 Item(
                     code = "PRD00001",
                     description = "Red Pencil"

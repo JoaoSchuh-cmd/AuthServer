@@ -1,11 +1,11 @@
 package com.pucpr.br.AuthServer.order
 
-import com.pucpr.br.AuthServer.auxfunctions.exceptions.BadRequestException
-import com.pucpr.br.AuthServer.auxfunctions.exceptions.UnhauthorizedUser
+import com.pucpr.br.AuthServer.auxfunctions.exceptions.NotFoundException
 import com.pucpr.br.AuthServer.items.Item
+import com.pucpr.br.AuthServer.items.ItemService
 import com.pucpr.br.AuthServer.security.UserToken
-import com.pucpr.br.AuthServer.users.User
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import org.aspectj.weaver.ast.Not
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/orders")
 class OrderController(
     val orderService: OrderService,
-    val orderRepository: OrderRepository
+    private val itemService: ItemService
 ) {
     @PostMapping
     @SecurityRequirement(name = "AuthServer")
@@ -63,9 +63,21 @@ class OrderController(
 
     @GetMapping("/{id}/items")
     fun findAllItems(@PathVariable id: Long): ResponseEntity<List<Item>>? {
-        val order = orderRepository.findById(id).orElse(null)
+        val order = orderService.findByIdOrNull(id)
             ?: return ResponseEntity.notFound().build()
         return ResponseEntity.ok(orderService.findAllItemsByOrder(order))
+    }
+
+    @DeleteMapping("/{id}/items/{item_id}")
+    fun deleteItemFromItemList(@PathVariable id: Long, @PathVariable item_id: Long) {
+        val order = orderService.findByIdOrNull(id) ?: throw NotFoundException("Order not found!")
+        val itemToRemove = itemService.findByIdOrNull(item_id) ?: throw NotFoundException("Item not found!")
+
+        if (!order.items.contains(itemToRemove)) throw NotFoundException("Item not found on order's item list!")
+        else {
+            order.items.remove(itemToRemove)
+            ResponseEntity.ok(order)
+        }
     }
 
     @DeleteMapping("/{id}")

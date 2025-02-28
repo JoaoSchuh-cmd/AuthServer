@@ -13,10 +13,8 @@ class OrderService(
 
     fun findAll() = orderRepository.findAll()
     fun findAllUsersOrders(id: Long) = orderRepository.findAllUsersOrders(id)
-    fun findByIdOrNull(id: Long) =
-        orderRepository.findByIdOrNull(id)
+    fun findByIdOrNull(id: Long) = orderRepository.findByIdOrNull(id)
     fun findByNumberOrNull(number: Int) = orderRepository.findByNumber(number)
     fun findAllItemsByOrder(order: Order) = itemRepository.findByOrder(order)
-
     fun delete(id: Long) = orderRepository.deleteById(id)
 }
