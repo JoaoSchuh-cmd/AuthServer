@@ -21,10 +21,18 @@ class UserController(
     fun ping() = "Pong"
 
     @PostMapping
-    fun insert(@RequestBody user: User) =
-        userService.insert(user)
-            .let { UserResponse(it) }
-            .let { ResponseEntity.status(HttpStatus.CREATED).body(it) }
+    @SecurityRequirement(name = "AuthServer")
+    @PreAuthorize("hasRole('ADMIN')")
+    fun insert(@RequestBody user: User, auth: Authentication) {
+        val userAuth = auth.principal as UserToken
+        if (userAuth.isAdmin)
+            userService.insert(user)
+                .let { UserResponse(it) }
+                .let { ResponseEntity.status(HttpStatus.CREATED).body(it) }
+        else {
+            ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
+    }
 
     @GetMapping
     fun findAll(@RequestParam dir: String = "ASC", @RequestParam role: String?): ResponseEntity<List<UserResponse>> {

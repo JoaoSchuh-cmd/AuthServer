@@ -18,4 +18,7 @@ data class UserToken(
 
     @get:JsonIgnore
     val isAdmin: Boolean get() = "ADMIN" in roles
+
+    @get:JsonIgnore
+    val isBuyer: Boolean get() = "BUYER" in roles
 }

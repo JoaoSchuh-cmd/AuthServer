@@ -19,6 +19,8 @@ class Bootstrapper(
             roleRepository.findByIdOrNull("ADMIN")
                 ?: roleRepository.save(Role("ADMIN", "System Administrator"))
                     .also { roleRepository.save(Role("USER", "Premium User")) }
+                    .also { roleRepository.save(Role("REGISTER", "Items Registration User")) }
+                    .also { roleRepository.save(Role("BUYER", "Orders Registration User")) }
 
         if (userRepository.findByRole("ADMIN").isEmpty()) {
             val admin = User(
@@ -37,6 +39,7 @@ class Bootstrapper(
                 name = "USER 1"
             )
             user1.roles.add(roleRepository.findByIdOrNull("USER")!!)
+            user1.roles.add(roleRepository.findByIdOrNull("REGISTER")!!)
             userRepository.save(user1)
         }
         if (userRepository.findByEmail("user2@authserver.com") == null) {
@@ -47,6 +50,16 @@ class Bootstrapper(
             )
             user2.roles.add(roleRepository.findByIdOrNull("ADMIN")!!)
             userRepository.save(user2)
+        }
+        if (userRepository.findByEmail("user3@authserver.com") == null) {
+            val user3 = User(
+                email = "user3@authserver.com",
+                password = "user3",
+                name = "USER 3"
+            )
+            user3.roles.add(roleRepository.findByIdOrNull("USER")!!)
+            user3.roles.add(roleRepository.findByIdOrNull("BUYER")!!)
+            userRepository.save(user3)
         }
     }
 

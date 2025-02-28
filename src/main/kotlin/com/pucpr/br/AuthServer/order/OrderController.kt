@@ -1,8 +1,14 @@
 package com.pucpr.br.AuthServer.order
 
+import com.pucpr.br.AuthServer.auxfunctions.exceptions.BadRequestException
+import com.pucpr.br.AuthServer.auxfunctions.exceptions.UnhauthorizedUser
 import com.pucpr.br.AuthServer.items.Item
+import com.pucpr.br.AuthServer.security.UserToken
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -18,6 +24,8 @@ class OrderController(
     val orderRepository: OrderRepository
 ) {
     @PostMapping
+    @SecurityRequirement(name = "AuthServer")
+    @PreAuthorize("hasRole('BUYER')")
     fun insert(@RequestBody order: Order) =
         orderService.insert(order).let {
             ResponseEntity
@@ -26,8 +34,15 @@ class OrderController(
         }
 
     @GetMapping
-    fun findAll() : ResponseEntity<List<Order>> {
-        return ResponseEntity.ok(orderService.findAll())
+    @SecurityRequirement(name = "AuthServer")
+    fun findAll(@PathVariable auth: Authentication) : ResponseEntity<List<Order>> {
+        val user = auth.principal as UserToken
+        return if (user.isAdmin)
+            ResponseEntity.ok(orderService.findAll())
+        else if (user.isBuyer)
+            ResponseEntity.ok(orderService.findAllUsersOrders(user.id))
+        else
+            throw BadRequestException("User role not authorized")
     }
 
     @GetMapping("/{id}")
@@ -50,6 +65,8 @@ class OrderController(
     }
 
     @DeleteMapping("/{id}")
+    @SecurityRequirement(name = "AuthServer")
+    @PreAuthorize("hasRole('ADMIN')")
     fun delete(@PathVariable id: Long) =
         orderService.delete(id).let { ResponseEntity.ok(it) }
 }

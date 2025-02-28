@@ -1,9 +1,11 @@
 package com.pucpr.br.AuthServer.items
 
 import com.pucpr.br.AuthServer.auxfunctions.SortDir
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import org.springframework.data.domain.Sort
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -19,6 +21,8 @@ class ItemController(
     val itemService: ItemService
 ) {
     @PostMapping
+    @SecurityRequirement(name = "AuthServer")
+    @PreAuthorize("hasRole('REGISTER')")
     fun insert(@RequestBody item: Item) {
         itemService.insert(item).let {
             ResponseEntity
@@ -49,6 +53,8 @@ class ItemController(
     }
 
     @DeleteMapping("/{id}")
+    @SecurityRequirement(name = "AuthServer")
+    @PreAuthorize("hasRole('ADMIN')")
     fun delete(@PathVariable id: Long) =
         itemService.delete(id).let { ResponseEntity.ok(it) }
 }
