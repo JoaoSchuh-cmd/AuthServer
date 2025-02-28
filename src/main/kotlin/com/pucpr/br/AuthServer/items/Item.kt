@@ -13,7 +13,7 @@ class Item(
 
     @NotNull
     @Column(name = "code", nullable = false)
-    val code: Int,
+    val code: String,
 
     @NotNull
     @Column(name = "description", nullable = false)

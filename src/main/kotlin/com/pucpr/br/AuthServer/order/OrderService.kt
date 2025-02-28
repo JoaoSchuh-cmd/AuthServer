@@ -12,6 +12,7 @@ class OrderService(
     fun insert(order: Order) = orderRepository.save(order)
 
     fun findAll() = orderRepository.findAll()
+    fun findAllUsersOrders(id: Long) = orderRepository.findAllUsersOrders(id)
     fun findByIdOrNull(id: Long) =
         orderRepository.findByIdOrNull(id)
     fun findByNumberOrNull(number: Int) = orderRepository.findByNumber(number)
