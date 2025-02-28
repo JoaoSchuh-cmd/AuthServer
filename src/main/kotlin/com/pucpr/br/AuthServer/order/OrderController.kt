@@ -4,6 +4,7 @@ import com.pucpr.br.AuthServer.auxfunctions.exceptions.BadRequestException
 import com.pucpr.br.AuthServer.auxfunctions.exceptions.UnhauthorizedUser
 import com.pucpr.br.AuthServer.items.Item
 import com.pucpr.br.AuthServer.security.UserToken
+import com.pucpr.br.AuthServer.users.User
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -35,14 +36,17 @@ class OrderController(
 
     @GetMapping
     @SecurityRequirement(name = "AuthServer")
-    fun findAll(@PathVariable auth: Authentication) : ResponseEntity<List<Order>> {
+    @PreAuthorize("hasRole('ADMIN') || hasRole('BUYER')")
+    fun findAll(auth: Authentication) : ResponseEntity<List<Order>> {
         val user = auth.principal as UserToken
-        return if (user.isAdmin)
-            ResponseEntity.ok(orderService.findAll())
-        else if (user.isBuyer)
-            ResponseEntity.ok(orderService.findAllUsersOrders(user.id))
-        else
-            throw BadRequestException("User role not authorized")
+
+        val orders = when {
+            user.isAdmin -> orderService.findAll()
+            user.isBuyer -> orderService.findAllUsersOrders(user.id)
+            else -> return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
+
+        return ResponseEntity.ok(orders)
     }
 
     @GetMapping("/{id}")

@@ -1,5 +1,7 @@
 package com.pucpr.br.AuthServer
 
+import com.pucpr.br.AuthServer.items.Item
+import com.pucpr.br.AuthServer.order.Order
 import com.pucpr.br.AuthServer.roles.Role
 import com.pucpr.br.AuthServer.roles.RoleRepository
 import com.pucpr.br.AuthServer.users.User
@@ -15,6 +17,32 @@ class Bootstrapper(
     private val userRepository: UserRepository,
 ): ApplicationListener<ContextRefreshedEvent> {
     override fun onApplicationEvent(event: ContextRefreshedEvent) {
+        createUsers()
+        createOrder()
+    }
+
+    fun createOrder() {
+        val order = Order(
+            buyer = userRepository.findByEmail("user3@authserver.com"),
+            number = 1,
+            items = listOf(
+                Item(
+                    code = "PRD00001",
+                    description = "Red Pencil"
+                ),
+                Item(
+                    code = "PRD00002",
+                    description = "Blue Pencil"
+                ),
+                Item(
+                    code = "PRD00003",
+                    description = "Black Pencil"
+                )
+            )
+        )
+    }
+
+    fun createUsers() {
         val adminRole =
             roleRepository.findByIdOrNull("ADMIN")
                 ?: roleRepository.save(Role("ADMIN", "System Administrator"))

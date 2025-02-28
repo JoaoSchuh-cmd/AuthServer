@@ -1,6 +1,7 @@
 package com.pucpr.br.AuthServer.users
 
 import com.pucpr.br.AuthServer.auxfunctions.SortDir
+import com.pucpr.br.AuthServer.auxfunctions.exceptions.UnhauthorizedUser
 import com.pucpr.br.AuthServer.security.UserToken
 import com.pucpr.br.AuthServer.users.controller.requests.LoginRequest
 import com.pucpr.br.AuthServer.users.controller.responses.UserResponse
@@ -23,15 +24,9 @@ class UserController(
     @PostMapping
     @SecurityRequirement(name = "AuthServer")
     @PreAuthorize("hasRole('ADMIN')")
-    fun insert(@RequestBody user: User, auth: Authentication) {
-        val userAuth = auth.principal as UserToken
-        if (userAuth.isAdmin)
-            userService.insert(user)
-                .let { UserResponse(it) }
-                .let { ResponseEntity.status(HttpStatus.CREATED).body(it) }
-        else {
-            ResponseEntity.status(HttpStatus.FORBIDDEN).build()
-        }
+    fun insert(@RequestBody user: User): ResponseEntity<UserResponse> {
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(UserResponse(userService.insert(user)))
     }
 
     @GetMapping
@@ -57,7 +52,7 @@ class UserController(
     fun delete(@PathVariable id: String, auth: Authentication): ResponseEntity<Void> {
         val user = auth.principal as UserToken
         val uid = if (id == "me") user.id else id.toLong()
-        return if (user.id == uid || user.isAdmin)
+        return if (user.id == uid)
             userService.delete(uid).let { ResponseEntity.ok().build() }
         else
             ResponseEntity.status(HttpStatus.FORBIDDEN).build()
