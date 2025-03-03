@@ -1,5 +1,6 @@
 package com.pucpr.br.AuthServer.order
 
+import com.pucpr.br.AuthServer.items.Item
 import com.pucpr.br.AuthServer.items.ItemRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -11,10 +12,10 @@ class OrderService(
 ) {
     fun insert(order: Order) = orderRepository.save(order)
 
-    fun findAll() = orderRepository.findAll()
-    fun findAllUsersOrders(id: Long) = orderRepository.findAllUsersOrders(id)
-    fun findByIdOrNull(id: Long) = orderRepository.findByIdOrNull(id)
-    fun findByNumberOrNull(number: Int) = orderRepository.findByNumber(number)
-    fun findAllItemsByOrder(order: Order) = itemRepository.findByOrder(order)
+    fun findAll(): MutableList<Order> = orderRepository.findAll()
+    fun findAllUsersOrders(id: Long): MutableList<Order> = orderRepository.findAllUsersOrders(id)
+    fun findByIdOrNull(id: Long): Order? = orderRepository.findByIdOrNull(id)
+    fun findByNumberOrNull(number: Int): Order? = orderRepository.findByNumber(number)
+    fun findAllItemsOfOrder(order: Order): MutableList<Item> = itemRepository.findByOrder(order)
     fun delete(id: Long) = orderRepository.deleteById(id)
 }

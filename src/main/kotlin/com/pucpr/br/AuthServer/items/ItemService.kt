@@ -1,6 +1,7 @@
 package com.pucpr.br.AuthServer.items
 
 import com.pucpr.br.AuthServer.auxfunctions.SortDir
+import jakarta.transaction.Transactional
 import org.springframework.data.domain.Sort
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -19,11 +20,9 @@ class ItemService(
 
     fun findByIdOrNull(id: Long) = itemRepository.findByIdOrNull(id)
 
-    fun findByCode(code: Int, dir: SortDir): List<Item>? =
-        when(dir) {
-            SortDir.ASC -> itemRepository.findByCode(code, Sort.by("code"))
-            SortDir.DESC -> itemRepository.findByCode(code, Sort.by("code").descending())
-        }
+    @Transactional
+    fun findByCode(code: String): Item? =
+        itemRepository.findByCode(code)
 
     fun delete(id: Long) = itemRepository.deleteById(id)
 }
