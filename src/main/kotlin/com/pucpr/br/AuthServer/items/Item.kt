@@ -1,12 +1,13 @@
 package com.pucpr.br.AuthServer.items
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.pucpr.br.AuthServer.order.Order
 import jakarta.persistence.*
 import org.jetbrains.annotations.NotNull
 
 @Entity
 @Table(name = "tblItems")
-class Item(
+data class Item(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
@@ -19,7 +20,7 @@ class Item(
     @Column(name = "description", nullable = false)
     val description: String,
 
-    @ManyToOne
-    @JoinColumn(name = "id_order", foreignKey = ForeignKey(name = "fk_item_id_order"))
-    val order: Order? = null
+    @ManyToMany(mappedBy = "items", fetch = FetchType.LAZY)
+    @JsonIgnore
+    val orders: MutableList<Order> = mutableListOf()
 )

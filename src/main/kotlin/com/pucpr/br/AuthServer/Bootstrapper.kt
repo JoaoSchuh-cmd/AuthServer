@@ -1,7 +1,9 @@
 package com.pucpr.br.AuthServer
 
 import com.pucpr.br.AuthServer.items.Item
+import com.pucpr.br.AuthServer.items.ItemRepository
 import com.pucpr.br.AuthServer.order.Order
+import com.pucpr.br.AuthServer.order.OrderRepository
 import com.pucpr.br.AuthServer.roles.Role
 import com.pucpr.br.AuthServer.roles.RoleRepository
 import com.pucpr.br.AuthServer.users.User
@@ -10,36 +12,53 @@ import org.springframework.context.ApplicationListener
 import org.springframework.context.event.ContextRefreshedEvent
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Component
+import kotlin.math.log
 
 @Component
 class Bootstrapper(
     private val roleRepository: RoleRepository,
     private val userRepository: UserRepository,
+    private val itemRepository: ItemRepository,
+    private val orderRepository: OrderRepository,
 ): ApplicationListener<ContextRefreshedEvent> {
     override fun onApplicationEvent(event: ContextRefreshedEvent) {
         createUsers()
+        createItems()
         createOrder()
     }
 
-    fun createOrder() {
-        val order = Order(
-            buyer = userRepository.findByEmail("user3@authserver.com"),
-            number = 1,
-            items = listOf(
+    fun createItems() {
+        itemRepository.saveAll(
+            mutableListOf(
                 Item(
                     code = "PRD00001",
                     description = "Red Pencil"
                 ),
                 Item(
                     code = "PRD00002",
-                    description = "Blue Pencil"
+                    description = "Blue Pencil",
                 ),
                 Item(
                     code = "PRD00003",
-                    description = "Black Pencil"
+                    description = "Blue Pencil",
                 )
             )
         )
+    }
+
+    fun createOrder() {
+        val items = itemRepository.findAllById (
+            listOf("PRD00001", "PRD00002", "PRD00003")
+                .mapNotNull { itemRepository.findByCode(it)?.id }
+        )
+        val order = Order(
+            buyer = userRepository.findByEmail("user3@authserver.com"),
+            number = 1
+        )
+
+        order.items.addAll(items)
+
+        orderRepository.save(order)
     }
 
     fun createUsers() {
@@ -88,6 +107,16 @@ class Bootstrapper(
             user3.roles.add(roleRepository.findByIdOrNull("USER")!!)
             user3.roles.add(roleRepository.findByIdOrNull("BUYER")!!)
             userRepository.save(user3)
+        }
+        if (userRepository.findByEmail("user4@authserver.com") == null) {
+            val user4 = User(
+                email = "user4@authserver.com",
+                password = "user4",
+                name = "USER 4"
+            )
+            user4.roles.add(roleRepository.findByIdOrNull("USER")!!)
+            user4.roles.add(roleRepository.findByIdOrNull("BUYER")!!)
+            userRepository.save(user4)
         }
     }
 

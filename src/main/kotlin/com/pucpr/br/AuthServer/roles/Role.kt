@@ -5,7 +5,7 @@ import jakarta.persistence.Id
 import org.intellij.lang.annotations.Pattern
 
 @Entity
-class Role(
+data class Role(
     @Id
     @Pattern("^[A-Z][A-Z0-9]+$")
     var name: String,

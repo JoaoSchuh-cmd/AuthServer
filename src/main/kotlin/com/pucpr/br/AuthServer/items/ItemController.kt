@@ -22,7 +22,7 @@ class ItemController(
 ) {
     @PostMapping
     @SecurityRequirement(name = "AuthServer")
-    @PreAuthorize("hasRole('REGISTER')")
+    @PreAuthorize("hasRole('ADMIN') || hasRole('REGISTER')")
     fun insert(@RequestBody item: Item) {
         itemService.insert(item).let {
             ResponseEntity
@@ -32,6 +32,8 @@ class ItemController(
     }
 
     @GetMapping()
+    @SecurityRequirement(name = "AuthServer")
+    @PreAuthorize("hasRole('ADMIN') || hasRole('REGISTER')")
     fun findAll(@RequestParam dir: String = "ASC"): ResponseEntity<List<Item>> {
         val sortDir = SortDir.findOrNull(dir) ?:
             return ResponseEntity.badRequest().build()
@@ -39,22 +41,26 @@ class ItemController(
     }
 
     @GetMapping("/id={id}")
+    @SecurityRequirement(name = "AuthServer")
+    @PreAuthorize("hasRole('ADMIN') || hasRole('REGISTER')")
     fun findById(@PathVariable id: Long) =
         itemService.findByIdOrNull(id)
             ?.let { ResponseEntity.ok(it) }
             ?: ResponseEntity.notFound().build()
 
     @GetMapping("/code={code}")
-    fun findByCode(@PathVariable code: Int, @RequestParam dir: String = "ASC") {
-        when (dir) {
-            "ASC" -> itemService.findByCode(code, SortDir.ASC).let { ResponseEntity.ok(it) }
-            "DESC" -> itemService.findByCode(code, SortDir.DESC).let { ResponseEntity.ok(it) }
-        }
+    @SecurityRequirement(name = "AuthServer")
+    @PreAuthorize("hasRole('ADMIN') || hasRole('REGISTER')")
+    fun findByCode(@PathVariable code: String, @RequestParam dir: String = "ASC") {
+        itemService.findByCode(code)
+            ?.let { ResponseEntity.ok(it) }
+            ?: ResponseEntity.notFound().build()
     }
 
     @DeleteMapping("/{id}")
     @SecurityRequirement(name = "AuthServer")
     @PreAuthorize("hasRole('ADMIN')")
+    @SecurityRequirement(name = "AuthServer")
     fun delete(@PathVariable id: Long) =
         itemService.delete(id).let { ResponseEntity.ok(it) }
 }
